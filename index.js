@@ -9,7 +9,12 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // MongoDB Connection URL
@@ -28,17 +33,40 @@ async function run() {
     const db = client.db("assignment6");
     const collection = db.collection("users");
     const postsCollection = db.collection("posts");
+    const galleryCollection = db.collection("gallery");
 
     // supply post related api
 
+    // for get all post
     app.get("/api/v1/posts", async (req, res) => {
       const result = await postsCollection.find().toArray();
       res.send(result);
     });
+    // for get single post
     app.get("/api/v1/posts/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await postsCollection.findOne(query);
+      res.send(result);
+    });
+    // for post
+    app.post("/api/v1/posts", async (req, res) => {
+      const post = req.body;
+      console.log(post);
+      const result = await postsCollection.insertOne(post);
+      res.send(result);
+    });
+    // for delete
+    app.delete("/api/v1/posts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await postsCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // Gallery relatd api
+    app.get("/api/v1/gallery", async (req, res) => {
+      const result = await galleryCollection.find().toArray();
       res.send(result);
     });
 
