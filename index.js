@@ -11,7 +11,8 @@ const port = process.env.PORT || 5000;
 // Middleware
 app.use(
   cors({
-    origin: "https://food-distribution2.netlify.app",
+    // origin: "https://food-distribution2.netlify.app",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
@@ -34,29 +35,28 @@ async function run() {
     const collection = db.collection("users");
     const postsCollection = db.collection("posts");
     const galleryCollection = db.collection("gallery");
+    const communityCollection = db.collection("community");
+    const testimonialCollection = db.collection("testimonials");
+    const volunteerCollection = db.collection("volunteers");
 
     // supply post related api
 
-    // for get all post
     app.get("/api/v1/posts", async (req, res) => {
       const result = await postsCollection.find().toArray();
       res.send(result);
     });
-    // for get single post
     app.get("/api/v1/posts/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await postsCollection.findOne(query);
       res.send(result);
     });
-    // for post
     app.post("/api/v1/posts", async (req, res) => {
       const post = req.body;
       console.log(post);
       const result = await postsCollection.insertOne(post);
       res.send(result);
     });
-    // for delete
     app.delete("/api/v1/posts/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -67,6 +67,42 @@ async function run() {
     // Gallery relatd api
     app.get("/api/v1/gallery", async (req, res) => {
       const result = await galleryCollection.find().toArray();
+      res.send(result);
+    });
+
+    // testimonial relatd api
+    app.post("/api/v1/testimonials", async (req, res) => {
+      const testimonial = req.body;
+      console.log(testimonial);
+      const result = await testimonialCollection.insertOne(testimonial);
+      res.send(result);
+    });
+    app.get("/api/v1/testimonials", async (req, res) => {
+      const result = await testimonialCollection.find().toArray();
+      res.send(result);
+    });
+
+    // volunteer relatd api
+    app.post("/api/v1/volunteers", async (req, res) => {
+      const volunteer = req.body;
+      console.log(volunteer);
+      const result = await volunteerCollection.insertOne(volunteer);
+      res.send(result);
+    });
+    app.get("/api/v1/volunteers", async (req, res) => {
+      const result = await volunteerCollection.find().toArray();
+      res.send(result);
+    });
+
+    // community relatd api
+    app.post("/api/v1/community", async (req, res) => {
+      const community = req.body;
+      console.log(community);
+      const result = await communityCollection.insertOne(community);
+      res.send(result);
+    });
+    app.get("/api/v1/community", async (req, res) => {
+      const result = await communityCollection.find().toArray();
       res.send(result);
     });
 
