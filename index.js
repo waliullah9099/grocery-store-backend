@@ -37,7 +37,25 @@ async function run() {
     // supply post related api
 
     app.get("/api/v1/products", async (req, res) => {
-      const result = await ProductCollection.find().toArray();
+      const queryUrl = req.query;
+      let modifyQuery = {};
+      if (queryUrl.category) {
+        modifyQuery.category = queryUrl.category;
+      }
+      if (queryUrl.rating) {
+        modifyQuery.rating = { $gte: Number(queryUrl.rating) };
+      }
+      if (queryUrl.price) {
+        modifyQuery.price = {
+          $lte: Number(queryUrl.price),
+        };
+      }
+
+      console.log(modifyQuery);
+
+      const result = await ProductCollection.find(modifyQuery)
+        .sort({ createdAt: 1 })
+        .toArray();
       res.send(result);
     });
     app.get("/api/v1/products/:id", async (req, res) => {
@@ -58,6 +76,16 @@ async function run() {
       const result = await ProductCollection.deleteOne(query);
       res.send(result);
     });
+
+    // app.get("/flash-sale", async (req, res) => {
+    //   const falseSale = await ProductCollection.find()
+    //     .sort({ createdAt: 1 })
+    //     .toArray();
+
+    //   const filter = falseSale.filter((flash) => flash.isFlash == true);
+    //   res.send(filter);
+    // });
+
     // Start the server
     app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);
